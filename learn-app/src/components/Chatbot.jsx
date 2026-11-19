@@ -1,6 +1,8 @@
 import { useState } from 'react'
 
-const MODEL = 'gemini-2.5-flash'
+// const MODEL = 'gemini-2.5-flash'
+const MODEL = 'gemini-3.5-flash-lite'
+
 
 function Chatbot({ onLogout }) {
   const [messages, setMessages] = useState([])
