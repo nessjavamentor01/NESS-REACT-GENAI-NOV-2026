@@ -1,7 +1,35 @@
 import { useEffect, useRef, useState } from 'react'
+import ReactMarkdown from 'react-markdown'
 import { generateContent } from '../services/axiosService'
 
 const modelName = import.meta.env.VITE_GEMINI_MODEL || 'Model not configured'
+const markdownComponents = {
+  h1: ({ children }) => <h1 className="mb-3 mt-4 text-xl font-semibold text-white">{children}</h1>,
+  h2: ({ children }) => <h2 className="mb-2 mt-4 text-lg font-semibold text-white">{children}</h2>,
+  h3: ({ children }) => <h3 className="mb-2 mt-3 text-base font-semibold text-white">{children}</h3>,
+  p: ({ children }) => <p className="mb-3 last:mb-0 leading-7">{children}</p>,
+  ul: ({ children }) => <ul className="mb-3 ml-5 list-disc space-y-1">{children}</ul>,
+  ol: ({ children }) => <ol className="mb-3 ml-5 list-decimal space-y-1">{children}</ol>,
+  li: ({ children }) => <li className="pl-1 leading-7">{children}</li>,
+  blockquote: ({ children }) => (
+    <blockquote className="my-3 border-l-2 border-violet-400 pl-4 text-slate-400">{children}</blockquote>
+  ),
+  a: ({ children, href }) => (
+    <a className="text-violet-300 underline underline-offset-2 hover:text-violet-200" href={href}>
+      {children}
+    </a>
+  ),
+  pre: ({ children }) => (
+    <pre className="my-3 overflow-x-auto rounded-lg bg-black/30 p-3 text-xs leading-5 [&_code]:bg-transparent [&_code]:p-0">
+      {children}
+    </pre>
+  ),
+  code: ({ children }) => (
+    <code className="rounded bg-white/10 px-1.5 py-0.5 font-mono text-[0.9em] text-violet-200">
+      {children}
+    </code>
+  ),
+}
 
 function AxiosChatBox() {
   const [messages, setMessages] = useState([])
@@ -90,14 +118,16 @@ function AxiosChatBox() {
 
         {messages.map((message, index) => (
           <article
-            className={`max-w-[90%] whitespace-pre-wrap rounded-2xl px-4 py-3 text-sm leading-6 sm:max-w-[80%] ${
+            className={`max-w-[90%] rounded-2xl px-4 py-3 text-sm leading-6 sm:max-w-[80%] ${
               message.role === 'user'
-                ? 'ml-auto rounded-br-md bg-violet-600 text-white'
-                : 'mr-auto rounded-bl-md border border-white/10 bg-slate-900 text-slate-200'
+                ? 'ml-auto whitespace-pre-wrap rounded-br-md bg-violet-600 text-white'
+                : 'mr-auto whitespace-normal rounded-bl-md border border-white/10 bg-slate-900 text-slate-200'
             }`}
             key={`${message.role}-${index}`}
           >
-            {message.text}
+            {message.role === 'assistant'
+              ? <ReactMarkdown components={markdownComponents}>{message.text}</ReactMarkdown>
+              : message.text}
           </article>
         ))}
 
